@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  webserver:
+    build: 
+      context: ./bin/webserver
+    container_name: 'srv-webserver'
+    restart: 'always'
+    ports:
+      - "8080:80"
+    links: 
+      - postgresql
+      - php
+    env_file:
+    - ./.env/webserver-env
+    volumes:
+      - ./html:/var/www/html 
+  php:
+    build: 
+      context: ./bin/php
+    container_name: 'srv-php'
+    ports:
+      - "9000:9000"
+    links: 
+      - postgresql
+    env_file:
+    - ./.env/php-env
+    volumes:
+      - ./html:/var/www/html 
+  postgresql:
+    build: ./bin/postgresql
+    container_name: 'srv-postgresql'
+    restart: 'always'
+    ports:
+      - "5499:5432"
+    env_file:
+    - ./.env/postgresql-env      
+    # volumes: 
+    #   - ${MYSQL_DATA_DIR-./data/mysql}:/var/lib/mysql
+    #   - ${MYSQL_LOG_DIR-./logs/mysql}:/var/log/mysql

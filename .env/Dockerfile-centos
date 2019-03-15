@@ -1,0 +1,36 @@
+# Dockerfile by Marcos Roberto
+# Variaveis de ambiente iniciais
+FROM centos:centos7
+LABEL author="marcos.roberto@defensoria.ce.def.br"
+ENV TZ=America/Fortaleza
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Dependencias básicas do S.O
+RUN yum -y update ; \ 
+yum clean all ; \ 
+yum -y install epel-release  ; \ 
+yum -y install gcc unzip wget git which patch autoconf \
+automake bison bzip2 gcc-c++ libffi-devel libtool readline-devel \
+sqlite-devel zlib-devel libyaml-devel openssl-devel \
+nodejs npm postgresql-devel openssl icu xorg-x11-fonts-Type1 xorg-x11-fonts-75dpi libXext libXrender libpng libjpeg ; \
+rpm -i https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.13.0-alpha-7b36694_linux-centos7-amd64.rpm ; \
+curl --fail -sSLo /etc/yum.repos.d/passenger.repo https://oss-binaries.phusionpassenger.com/yum/definitions/el-passenger.repo ; \
+yum -y install passenger passenger-devel 
+
+# Dependencias RVM e RUBY
+RUN /bin/bash -l -c "curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - " ; \ 
+/bin/bash -l -c "curl -ssL https://get.rvm.io | bash -s stable --without-gems="rvm rubygems-bundler" " ; \ 
+/bin/bash -l -c "source ~/.bashrc" ; \ 
+/bin/bash -l -c "rvm install 2.2.1" ; \ 
+/bin/bash -l -c "gem uninstall -i /usr/local/rvm/gems/ruby-2.2.1@global bundler" ; \ 
+/bin/bash -l -c "gem install bundler -v=1.8.4"
+
+#### INICIO CONFIGURAÇÃO DA APLICAÇÃO ####
+
+# Executar bundle install
+WORKDIR /app
+COPY ./compose_setup/files/run.sh Gemfile ./
+RUN /bin/bash -l -c "bundle install" ; \
+mv run.sh / ; chmod 775 /*.sh
+## Iniciar Tudo
+CMD ["/run.sh"]
