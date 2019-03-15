@@ -2,6 +2,7 @@ web:
     image: nginx:latest
     ports:
         - "8080:80"
+        - "8081:81"
     volumes:
         - ./code:/code
         - ./conf/site.conf:/etc/nginx/conf.d/site.conf

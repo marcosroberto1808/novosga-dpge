@@ -1,32 +1,34 @@
 version: "3"
 
 services:
-  webserver:
+  nginx:
     build: 
-      context: ./bin/webserver
-    container_name: 'srv-webserver'
+      context: ./bin/nginx
+    container_name: 'srv-nginx'
     restart: 'always'
     ports:
       - "8080:80"
+      - "8081:81"
     links: 
       - postgresql
       - php
     env_file:
     - ./.env/webserver-env
     volumes:
-      - ./html:/var/www/html 
+      - ./code:/code
+      - ./conf/site.conf:/etc/nginx/conf.d/site.conf
   php:
     build: 
       context: ./bin/php
     container_name: 'srv-php'
-    ports:
-      - "9000:9000"
+    # ports:
+    #   - "9000:9000"
     links: 
       - postgresql
     env_file:
     - ./.env/php-env
     volumes:
-      - ./html:/var/www/html 
+      - ./code:/code
   postgresql:
     build: ./bin/postgresql
     container_name: 'srv-postgresql'
@@ -38,3 +40,19 @@ services:
     # volumes: 
     #   - ${MYSQL_DATA_DIR-./data/mysql}:/var/lib/mysql
     #   - ${MYSQL_LOG_DIR-./logs/mysql}:/var/log/mysql
+
+##### testes 
+  # webserver:
+  #   build: 
+  #     context: ./bin/webserver
+  #   container_name: 'srv-webserver'
+  #   restart: 'always'
+  #   ports:
+  #     - "8080:80"
+  #   links: 
+  #     - postgresql
+  #     - php
+  #   env_file:
+  #   - ./.env/webserver-env
+  #   volumes:
+  #     - ./html:/var/www/html 
