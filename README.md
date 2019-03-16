@@ -10,3 +10,10 @@ You can set the system as you like with environment variables (using docker-comp
 ## Edit .env/novosga-env
 
 ## Edit .env/postgres-env
+
+
+## NOVOSGA ADMIN http://localhost:8080
+
+## POSTGRESQL localhost:5499
+
+## PAINEL WEB http://localhost:8081
